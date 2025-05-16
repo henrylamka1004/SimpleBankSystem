@@ -1,10 +1,10 @@
-# SimpleBankSystem
+## SimpleBankSystem
 
 Clone and run by below command to enter the system
 > python main.py
 
-Functions:
-[[Login section]]
+# Functions:
+Login section
 1. Open new bank account
 2. Open existing account
 3. Exit
@@ -13,7 +13,7 @@ Functions:
 >> 2. Login bank account with registered name and account no
 >> 3. Exit system
 
-[[Feature section]]
+Feature section
 1. Deposit to accounts
 2. Withdraw from accounts
 3. Transfer money to other accounts

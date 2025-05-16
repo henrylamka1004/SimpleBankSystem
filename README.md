@@ -1,5 +1,6 @@
 ## SimpleBankSystem
 
+develop with python 3.12
 Clone and run by below command to enter the system
 > python main.py
 

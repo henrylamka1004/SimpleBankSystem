@@ -10,6 +10,7 @@ class Account:
     def __init__(self, acc_name):
         self.account_name = acc_name
         self.account_no = uuid.uuid4().fields[0]
+        self.active = "Y"
         
     def __str__(self):
         return f"Account(account_name={self.account_name}, account_no={self.account_no})"

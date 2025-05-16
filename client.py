@@ -1,28 +1,17 @@
 from banking import Bank
-from model import DataBase, Transaction
-
-import warnings
-warnings.simplefilter(action='ignore', category=FutureWarning)
+from model import DataBase
 
 class Client:
     bank = Bank()
     def __init__(self, acc_no):
         self.account_no = acc_no
 
-    def transfer_money(self, rcv_acc_no, amount, success="Y"):
-        transcation = Transaction(self.account_no, rcv_acc_no, amount)
-        current_dt, current_time = self.bank.refresh_datetime()
-        transcation.current_dt, transcation.current_time = current_dt, current_time
-        txn_record = {
-            "pay_account_no": [transcation.pay_accno],
-            "receive_account_no": [transcation.rcv_accno],
-            "amount": [transcation.amount],
-            "txn_date": [transcation.current_dt],
-            "txn_time": [transcation.current_time],
-        }
+    def transfer_money(self, rcv_acc, amount, success="Y"):
+        
+        txn_record = self.bank.get_transaction_info(self.account_no, rcv_acc, amount)
         
         # check rcv account exists
-        if len(self.bank.check_csv(DataBase.account_db, f"account_no == {rcv_acc_no}")) == 0:
+        if len(self.bank.check_csv(DataBase.account_db, f"account_no == {rcv_acc}")) == 0:
             print("\n==============\nCannot find recieve account\n==============\n")
             txn_record["success"] = "N"
             self.bank.append_csv(DataBase.transaction_db, txn_record)
@@ -33,7 +22,7 @@ class Client:
             self.bank.append_csv(DataBase.transaction_db, txn_record)
             return
             
-        self.deposit(amount, rcv_acc_no)
+        self.deposit(amount, rcv_acc)
         txn_record["success"] = "Y"
         self.bank.append_csv(DataBase.transaction_db, txn_record)
         print("\n==============\nTransfer amount to another account\n==============\n")
@@ -41,6 +30,11 @@ class Client:
     def deposit(self, amount, acc_no):
         acc_no = int(acc_no)
         acc_bal = self.bank.check_csv(DataBase.balance_db, f"account_no == {acc_no}")["balance"].reset_index(drop=True)[0]
+        
+        txn_record = self.bank.get_transaction_info("88888888", self.account_no, amount)
+        txn_record["success"] = "Y"
+        self.bank.append_csv(DataBase.transaction_db, txn_record)
+        
         acc_bal += amount
         acc_bal = round(acc_bal,2)
         df_bal = self.bank.read_csv(DataBase.balance_db)
@@ -54,9 +48,16 @@ class Client:
     def withdraw(self, amount, acc_no):
         acc_no = int(acc_no)
         acc_bal = self.bank.check_csv(DataBase.balance_db, f"account_no == {acc_no}")["balance"].reset_index(drop=True)[0]
+        
+        txn_record = self.bank.get_transaction_info(self.account_no, "88888888", amount)
+        
         if acc_bal < amount:
             print("\n==============\nNot enough balance\n==============\n")
+            txn_record["success"] = "N"
+            self.bank.append_csv(DataBase.transaction_db, txn_record)
             return False
+        txn_record["success"] = "Y"
+        self.bank.append_csv(DataBase.transaction_db, txn_record)
         acc_bal = acc_bal - amount
         acc_bal = round(acc_bal,2)
         df_bal = self.bank.read_csv(DataBase.balance_db)

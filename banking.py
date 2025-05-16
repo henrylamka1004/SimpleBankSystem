@@ -37,7 +37,20 @@ class Bank:
         current_dt = datetime.strftime(now, "%Y%m%d")
         current_time = datetime.strftime(now, "%H%M%S")
         return current_dt, current_time
-            
+
+    def get_transaction_info(self, pay_acc, rcv_acc, amount):
+        transcation = Transaction(pay_acc, rcv_acc, amount)
+        current_dt, current_time = self.refresh_datetime()
+        transcation.current_dt, transcation.current_time = current_dt, current_time
+        txn_record = {
+            "pay_account_no": [transcation.pay_accno],
+            "receive_account_no": [transcation.rcv_accno],
+            "amount": [transcation.amount],
+            "txn_date": [transcation.current_dt],
+            "txn_time": [transcation.current_time],
+        }
+        return txn_record
+    
     def create_account(self, acc_name, init_deposit):
         if len(self.check_csv(DataBase.account_db, f"account_name == '{acc_name}'")) > 0:
             print("\n==============\nAccount Name exists already.\n==============\n")
@@ -57,6 +70,7 @@ class Bank:
         acc_record = {
             "account_no": [account.account_no],
             "account_name": [account.account_name],
+            "active": [account.active],
             "create_dt": [account.create_dt],
             "create_time": [account.create_time],
         }

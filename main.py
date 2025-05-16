@@ -1,6 +1,9 @@
 from client import Client
 from banking import Bank
 
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
 bank = Bank()
 width = 50
 print("*" * width)
@@ -13,7 +16,7 @@ running2 = True
 while running1:
     print("Choose an option:\n1. Open new bank account\n2. Open existing account\n3. Exit")
     try:
-        choice1 = int(input("1, 2 or 3: "))
+        choice1 = int(input("1, 2 or 3: ") or 3)
     except:
         running1 = False
 
@@ -48,7 +51,7 @@ while running1:
             client = Client(acc_no)
             while running2:
                 print("\n==============\nChoose an option:\n1. Deposit to accounts\n2. Withdraw from accounts\n3. Transfer money to other accounts\n4. Exit\n==============\n")
-                choice2 = int(input("1, 2, 3 or 4: "))
+                choice2 = int(input("1, 2, 3 or 4: ") or 4)
                 if choice2 == 1:
                     while True:
                         try:
